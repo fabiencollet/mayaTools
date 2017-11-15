@@ -10,11 +10,10 @@
 '''
 
 import lib.storeAttributesLib as storeAttr
-from mayaTools.lib.Qt import QtWidgets, QtCore, QtGui
-
-reload(storeAttr)
+from ..lib.Qt import QtWidgets, QtCore, QtGui
 import maya.cmds as mc
 
+reload(storeAttr)
 
 storeAttributesUILog = storeAttr.Log('storeAttributesLog')
 
@@ -645,7 +644,7 @@ class SettingsDialog(QtWidgets.QDialog):
         self.show()
 
 
-def mayaLaunch():
+def launch():
     ''' Def to call to launch tool in maya '''
 
     global storeAttributesWin

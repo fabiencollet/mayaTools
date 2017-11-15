@@ -27,7 +27,7 @@ class ToolboxUI(QtWidgets.QWidget):
     def __init__(self):
         super(ToolboxUI, self).__init__()
 
-        self.title = ' - '.join(['Toolbox', _version_, _author_])
+        self.title = ' - '.join(['Toolbox', _version_])
         self.setWindowTitle(self.title)
 
         self.setMinimumSize(150, 400)

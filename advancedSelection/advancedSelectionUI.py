@@ -15,7 +15,7 @@
 try:
     from PySide2 import QtWidgets, QtCore
 except:
-    from mayaTools.lib.Qt import QtWidgets, QtCore, QtGui
+    from ..lib.Qt import QtWidgets, QtCore, QtGui
 import maya.cmds as mc
 
 advancedSelectionWin = None

@@ -14,7 +14,7 @@ import os
 import pprint
 
 import maya.cmds as mc
-from mayaTools.lib.Qt import QtWidgets
+from ...lib.Qt import QtWidgets
 
 ##########################
 #        SETTINGS
