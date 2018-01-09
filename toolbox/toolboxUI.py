@@ -16,11 +16,26 @@ _version_ = '1.0.0'
 _author_ = 'Fabien Collet'
 
 import toolboxManagerUI
-from PySide2 import QtWidgets
+try:
+    from PySide2 import QtWidgets, QtCore
+except:
+    from ..lib.Qt import QtWidgets, QtCore
+
+from lib import toolboxLib
+from ..lib import customWidget
+reload(customWidget)
+reload(toolboxLib)
 import os
 
+scriptDir = os.path.dirname(__file__)
+stylePath = os.sep.join([scriptDir, 'css', 'dark.stylesheet'])
+
+with open(stylePath, 'r') as f:
+    styleSheet = f.read()
+    f.close()
 
 toolboxWin = None
+
 
 class ToolboxUI(QtWidgets.QWidget):
 
@@ -33,12 +48,17 @@ class ToolboxUI(QtWidgets.QWidget):
         self.setMinimumSize(150, 400)
         self.resize(150, 400)
 
+        self.tool = toolboxLib.ToolBoxLayout(
+            '/homes/fabco/maya/2016.5/scripts/myScript/mayaTools/toolbox/data/toolbox_fab.json')
+
         self.createLayouts()
         self.createWidgets()
         self.createHierarchy()
         self.createConnections()
 
         self.toolboxManagerUI = toolboxManagerUI.ToolboxManagerUI()
+
+        self.setStyleSheet(styleSheet)
 
     def createLayouts(self):
         # Create Main Layout
@@ -51,15 +71,23 @@ class ToolboxUI(QtWidgets.QWidget):
         self.settingsBtn = QtWidgets.QPushButton()
         self.settingsBtn.setText('Settings')
 
-        listScripts = ['fre', 'goij', 'ert',
-                       'olpm', 'orie', 'ploi',
-                       'msoe', 'ilpo', 'edf']
+        for category in self.tool.getCategories():
 
-        for script in listScripts:
-            btnWidget = QtWidgets.QPushButton()
-            btnWidget.setText(script)
+            collapse_widget = customWidget.CollapseWidget()
+            collapse_widget.setLabel(category)
 
-            self.buttonLayout.addWidget(btnWidget)
+            for script in self.tool.getScriptInCategory(category):
+                button = customWidget.CustomButton()
+                button.setText(script)
+                collapse_widget.addWidget(button)
+
+                version, description, icon, helpMessage, helpPicture, clickCommand, double_clickCommand = self.tool.getScriptInfo(
+                    category, script)
+
+                button.setClickCommand(clickCommand)
+                button.setDoubleClickCommand(double_clickCommand)
+
+            self.buttonLayout.addWidget(collapse_widget)
 
     def createHierarchy(self):
 
@@ -75,6 +103,7 @@ class ToolboxUI(QtWidgets.QWidget):
 
         self.toolboxManagerUI.show()
         print self.toolboxManagerUI.textScript.toPlainText()
+
 
 def launch():
     ''' Def to call to launch tool in maya '''

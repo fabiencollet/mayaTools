@@ -37,8 +37,7 @@ CAMERA_NAME = '{}_camera'.format(LD_PREFIX)
 def createTurnTable(asset,
                     cameraFocal=75,
                     overscan=1,
-                    animEnd=120,
-                    createHierarchy=True):
+                    animEnd=120):
 
     # Set Current time to frame 1
     mc.currentTime(1)

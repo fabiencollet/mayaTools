@@ -15,7 +15,7 @@
 _version_ = '1.0.0'
 _author_ = 'Fabien Collet'
 
-from PySide2 import QtWidgets
+from ..lib.Qt import QtWidgets
 
 
 toolboxManagerWin = None
