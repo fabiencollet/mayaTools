@@ -18,6 +18,9 @@ except:
     from myScript.mayaTools.lib.Qt import QtWidgets, QtGui, QtCore
 
 from random import randint
+import os
+
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class Button(QtWidgets.QWidget):
@@ -32,7 +35,6 @@ class Button(QtWidgets.QWidget):
         self.h = 10
         self.collapse = True
         self.hover = False
-
 
     def initUI(self):
 
@@ -114,12 +116,27 @@ class CollapseWidget(QtWidgets.QWidget):
         self.button.setChecked(False)
         self.button.toggled.connect(self.hideContent)
 
+        self.icon_path_open = os.sep.join([SCRIPT_PATH, 'icons/svg/chevron-down.svg'])
+        self.icon_path_closed = os.sep.join([SCRIPT_PATH, 'icons/svg/chevron-right.svg'])
+
+        self.setIcon(self.icon_path_closed)
+
+        self.button.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.button.setIconSize(QtCore.QSize(16, 16))
+
+    def setIcon(self, path):
+
+        ico = QtGui.QIcon(path)
+        self.button.setIcon(ico)
+
     def hideContent(self):
         child_item = self.content_layout.count()
         for i in range(child_item):
             if self.button.isChecked():
+                self.setIcon(self.icon_path_open)
                 self.content_layout.itemAt(i).widget().setVisible(True)
             else:
+                self.setIcon(self.icon_path_closed)
                 self.content_layout.itemAt(i).widget().setVisible(False)
 
     def setLabel(self, label):
@@ -136,11 +153,19 @@ class CustomButton(QtWidgets.QPushButton):
     def __init__(self):
         super(CustomButton, self).__init__()
         self.doubleClickTriggered = False
-        self.clickCommand = ''
+        self.left_click_command = ''
+        self.middle_click_command = ''
+        self.right_click_command = ''
         self.doubleClickCommand = ''
 
-    def setClickCommand(self, script):
-        self.clickCommand = compile(script, '<string>', 'exec')
+    def setLeftClickCommand(self, script):
+        self.left_click_command = compile(script, '<string>', 'exec')
+
+    def setMiddleClickCommand(self, script):
+        self.middle_click_command= compile(script, '<string>', 'exec')
+
+    def setRightClickCommand(self, script):
+        self.right_click_command = compile(script, '<string>', 'exec')
 
     def setDoubleClickCommand(self, script):
         self.doubleClickCommand = compile(script, '<string>', 'exec')
@@ -156,8 +181,17 @@ class CustomButton(QtWidgets.QPushButton):
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
-            if self.clickCommand and not self.doubleClickTriggered:
-                exec self.clickCommand
+            if self.left_click_command:
+                exec self.left_click_command
+
+        if event.button() == QtCore.Qt.MouseButton.MiddleButton:
+            if self.middle_click_command:
+                exec self.middle_click_command
+
+        if event.button() == QtCore.Qt.MouseButton.RightButton:
+            if self.right_click_command:
+                exec self.right_click_command
+
 
 class RoundButton(QtWidgets.QToolButton):
     def __init__(self):

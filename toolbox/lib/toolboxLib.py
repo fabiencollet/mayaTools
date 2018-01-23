@@ -65,7 +65,6 @@ class ToolBoxLayout():
 
         self.loadFile()
 
-
     def fileIsValid(self):
 
         if not self.file_extension == 'json':
@@ -113,7 +112,9 @@ class ToolBoxLayout():
         icon = self.toolbox_data[category][script]['icon']
         helpMessage = self.toolbox_data[category][script]['helpMessage']
         helpPicture = self.toolbox_data[category][script]['helpPicture']
-        clickCommand = self.toolbox_data[category][script]['clickCommand']
+        left_click_command = self.toolbox_data[category][script]['left_click_command']
+        middle_click_command = self.toolbox_data[category][script]['middle_click_command']
+        right_click_command = self.toolbox_data[category][script]['right_click_command']
         double_clickCommand = self.toolbox_data[category][script]['double_clickCommand']
 
-        return version, description, icon, helpMessage, helpPicture, clickCommand, double_clickCommand
+        return version, description, icon, helpMessage, helpPicture, left_click_command, middle_click_command, right_click_command, double_clickCommand
