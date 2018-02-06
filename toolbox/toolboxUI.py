@@ -13,7 +13,6 @@
 '''
 
 _version_ = '1.0.0'
-_author_ = 'Fabien Collet'
 
 import maya.cmds as mc
 import toolboxManagerUI
@@ -66,13 +65,12 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
         self.setWindowTitle(self.title)
 
-        self.setWindowIcon(QtGui.QIcon('/homes/fabco/maya/2016.5/scripts/myScript/mayaTools/toolbox/icons/svg/tools.svg'))
+        self.setWindowIcon(QtGui.QIcon(os.sep.join([scriptDir, 'icons', 'svg', 'tools.svg'])))
 
         self.setMinimumSize(150, 400)
         self.resize(150, 400)
 
-        self.tool = toolboxLib.ToolBoxLayout(
-            '/homes/fabco/maya/2016.5/scripts/myScript/mayaTools/toolbox/data/toolbox_fab.json')
+        self.tool = toolboxLib.ToolBoxLayout(os.sep.join([scriptDir, 'data', 'toolbox_fab.json']))
 
         self.createLayouts()
         self.createWidgets()
@@ -138,7 +136,6 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
     def showToolboxManager(self):
 
         self.toolboxManagerUI.show()
-        print self.toolboxManagerUI.textScript.toPlainText()
 
 
 def launch():

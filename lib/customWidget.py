@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-''':mod:`testWidget`
+''':mod:`customWidget`
 ===================================
 
-.. module:: testWidget
+.. module:: customWidget
    :platform: Windows
-   :synopsis: Custom toolbox
+   :synopsis: Custom Widget
    :author: Fabien Collet <fbncollet@gmail.com>
    :date: 2017.08.23
 
@@ -116,8 +116,8 @@ class CollapseWidget(QtWidgets.QWidget):
         self.button.setChecked(False)
         self.button.toggled.connect(self.hideContent)
 
-        self.icon_path_open = os.sep.join([SCRIPT_PATH, 'icons/svg/chevron-down.svg'])
-        self.icon_path_closed = os.sep.join([SCRIPT_PATH, 'icons/svg/chevron-right.svg'])
+        self.icon_path_open = os.sep.join([SCRIPT_PATH, 'icons', 'svg', 'chevron-down.svg'])
+        self.icon_path_closed = os.sep.join([SCRIPT_PATH, 'icons', 'svg', 'chevron-right.svg'])
 
         self.button.setStyleSheet("background-color:grey;")
 
