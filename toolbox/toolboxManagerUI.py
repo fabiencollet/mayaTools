@@ -16,9 +16,18 @@ _version_ = '1.0.0'
 _author_ = 'Fabien Collet'
 
 from ..lib.Qt import QtWidgets
-
+import os
 
 toolboxManagerWin = None
+
+# Style
+scriptDir = os.path.dirname(os.path.realpath(__file__))
+stylePath = os.sep.join([scriptDir, 'css', 'dark.stylesheet'])
+
+with open(stylePath, 'r') as f:
+    styleSheet = f.read()
+    f.close()
+
 
 class ToolboxManagerUI(QtWidgets.QWidget):
 
@@ -27,6 +36,8 @@ class ToolboxManagerUI(QtWidgets.QWidget):
 
         self.title = ' - '.join(['Toolbox Manager', _version_, _author_])
         self.setWindowTitle(self.title)
+
+        self.setStyleSheet(styleSheet)
 
         self.setMinimumSize(300, 400)
         self.resize(300, 400)
@@ -55,7 +66,7 @@ class ToolboxManagerUI(QtWidgets.QWidget):
         self.setLayout(self.mainLayout)
 
     def createConnections(self):
-        print 'testtest'
+        print 'toolBox manager create connection'
 
 
 def launch():

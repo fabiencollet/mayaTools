@@ -15,7 +15,10 @@
 _version_ = '1.0.0'
 _author_ = 'Fabien Collet'
 
+import maya.cmds as mc
 import toolboxManagerUI
+reload(toolboxManagerUI)
+import maya.OpenMayaUI as omui
 try:
     from PySide2 import QtWidgets, QtCore, QtGui
 except:
@@ -28,6 +31,21 @@ reload(toolboxLib)
 import os
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 
+try:
+    import pysideuic
+    from shiboken import wrapInstance
+
+except ImportError:
+    import pyside2uic as pysideuic
+    from shiboken2 import wrapInstance
+
+
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr), QtWidgets.QWidget)
+
+
+# Style
 scriptDir = os.path.dirname(os.path.realpath(__file__))
 stylePath = os.sep.join([scriptDir, 'css', 'dark.stylesheet'])
 
@@ -38,34 +56,14 @@ with open(stylePath, 'r') as f:
 toolBoxWin = None
 
 
-class ToolBoxMain(QtWidgets.QMainWindow):
+class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
-    def __init__(self):
-        super(ToolBoxMain, self).__init__()
-
-        self.toolBox = ToolboxUI()
-
-        self.setCentralWidget(self.toolBox)
-
-
-class DockWidget(QtWidgets.QDockWidget):
-
-    def __init__(self):
-        super(DockWidget, self).__init__()
-
-        self.toolBox_main = ToolBoxMain()
-
-        self.setParent(self.toolBox_main)
-
-        self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
-
-
-class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QWidget):
-
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(ToolboxUI, self).__init__(parent=parent)
 
         self.title = ' - '.join(['Toolbox', _version_])
+        self.setObjectName('Toolbox')
+
         self.setWindowTitle(self.title)
 
         self.setWindowIcon(QtGui.QIcon('/homes/fabco/maya/2016.5/scripts/myScript/mayaTools/toolbox/icons/svg/tools.svg'))
@@ -92,6 +90,8 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QWidget):
         self.buttonLayout = QtWidgets.QGridLayout()
 
     def createWidgets(self):
+
+        self.main_widget = QtWidgets.QWidget()
 
         self.settingsBtn = QtWidgets.QPushButton()
         self.settingsBtn.setText('Settings')
@@ -129,7 +129,8 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QWidget):
         self.mainLayout.addWidget(self.settingsBtn)
         self.mainLayout.addLayout(self.buttonLayout)
 
-        self.setLayout(self.mainLayout)
+        self.main_widget.setLayout(self.mainLayout)
+        self.setCentralWidget(self.main_widget)
 
     def createConnections(self):
         self.settingsBtn.clicked.connect(self.showToolboxManager)
@@ -140,17 +141,16 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QWidget):
         print self.toolboxManagerUI.textScript.toPlainText()
 
 
-
-
-
-
 def launch():
     ''' Def to call to launch tool in maya '''
 
     global toolBoxWin
 
     if toolBoxWin:
-        toolBoxWin.close()
+        print toolBoxWin.objectName()
 
-    toolBoxWin = ToolboxUI()
-    toolBoxWin.show(dockable=True)
+        mc.deleteUI(toolBoxWin.objectName())
+
+    mayaWin = maya_main_window()
+    toolBoxWin = ToolboxUI(mayaWin)
+    toolBoxWin.show(dockable=True, area='left')

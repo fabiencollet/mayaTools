@@ -119,6 +119,8 @@ class CollapseWidget(QtWidgets.QWidget):
         self.icon_path_open = os.sep.join([SCRIPT_PATH, 'icons/svg/chevron-down.svg'])
         self.icon_path_closed = os.sep.join([SCRIPT_PATH, 'icons/svg/chevron-right.svg'])
 
+        self.button.setStyleSheet("background-color:grey;")
+
         self.setIcon(self.icon_path_closed)
 
         self.button.setLayoutDirection(QtCore.Qt.LeftToRight)
