@@ -15,7 +15,7 @@
 try:
     from PySide2 import QtWidgets, QtGui, QtCore
 except:
-    from myScript.mayaTools.lib.Qt import QtWidgets, QtGui, QtCore
+    from Qt import QtWidgets, QtGui, QtCore
 
 from random import randint
 import os
