@@ -82,6 +82,15 @@ class ToolBoxLayout():
             with open(self.file_path) as json_data:
                 self.toolbox_data = json.load(json_data)
 
+    def saveFile(self):
+
+        if self.fileIsValid():
+
+            json_datas = json.dumps(self.toolbox_data, indent=4)
+            f = open(self.file_path, 'w')
+            f.write(json_datas)
+            f.close()
+
     def getCategories(self):
 
         self.list_category = []

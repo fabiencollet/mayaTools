@@ -19,6 +19,10 @@ try:
 except:
     from ..lib.Qt import QtWidgets
 import os
+import pprint
+
+from lib import toolboxLib
+reload(toolboxLib)
 
 toolboxManagerWin = None
 
@@ -48,6 +52,9 @@ class ToolboxManagerUI(QtWidgets.QWidget):
         self.createWidgets()
         self.createHierarchy()
         self.createConnections()
+
+        self.tool = toolboxLib.ToolBoxLayout(os.sep.join([scriptDir, 'data', 'toolbox_data.json']))
+
 
     def createLayouts(self):
         # Create Main Layout
@@ -95,6 +102,9 @@ class ToolboxManagerUI(QtWidgets.QWidget):
         self.btnSaveContent = QtWidgets.QPushButton()
         self.btnSaveContent.setText('Save')
 
+        self.btnRefreshContent = QtWidgets.QPushButton()
+        self.btnRefreshContent.setText('Refresh')
+
     def createHierarchy(self):
 
         self.categoryLayout.addWidget(self.labelCategory)
@@ -114,6 +124,7 @@ class ToolboxManagerUI(QtWidgets.QWidget):
         self.contentLayout.addWidget(self.labelRightContent)
         self.contentLayout.addWidget(self.rightScript)
         self.contentLayout.addWidget(self.btnSaveContent)
+        self.contentLayout.addWidget(self.btnRefreshContent)
 
         # Add to main layout
         self.mainLayout.addLayout(self.categoryLayout)
@@ -123,8 +134,93 @@ class ToolboxManagerUI(QtWidgets.QWidget):
         self.setLayout(self.mainLayout)
 
     def createConnections(self):
-        print 'toolBox manager create connection'
+        self.btnRefreshContent.clicked.connect(self.refreshContent)
+        self.btnSaveContent.clicked.connect(self.printData)
 
+        self.btnAddCategory.clicked.connect(self.addCategory)
+        self.btnAddScript.clicked.connect(self.addScript)
+
+        self.listCategory.itemActivated.connect(self.getScripts)
+        self.listScript.itemActivated.connect(self.getScriptInfo)
+
+    def refreshContent(self):
+
+        self.listCategory.clear()
+        self.listScript.clear()
+        self.leftScript.clear()
+        self.middleScript.clear()
+        self.rightScript.clear()
+
+        for category in self.tool.toolbox_data:
+            self.listCategory.addItem(category)
+
+
+    def getScripts(self):
+        category = self.listCategory.currentItem().text()
+        self.listScript.clear()
+        self.leftScript.clear()
+        self.middleScript.clear()
+        self.rightScript.clear()
+
+        for script in self.tool.toolbox_data[category]:
+            self.listScript.addItem(script)
+
+
+    def getScriptInfo(self):
+        category = self.listCategory.currentItem().text()
+        script = self.listScript.currentItem().text()
+        self.leftScript.clear()
+        self.middleScript.clear()
+        self.rightScript.clear()
+
+
+        left_click_command = self.tool.toolbox_data[category][script]['left_click_command']
+        middle_click_command = self.tool.toolbox_data[category][script]['middle_click_command']
+        right_click_command = self.tool.toolbox_data[category][script]['right_click_command']
+
+        self.leftScript.setText(left_click_command)
+        self.middleScript.setText(middle_click_command)
+        self.rightScript.setText(right_click_command)
+
+    def addCategory(self):
+
+        category, ok = QtWidgets.QInputDialog.getText(self, 'Text Input Dialog', 'New category:')
+        if ok:
+            self.listCategory.addItem(category)
+            self.tool.toolbox_data[category]= {}
+
+    def addScript(self):
+
+        category = self.listCategory.currentItem().text()
+
+        script, ok = QtWidgets.QInputDialog.getText(self, 'Text Input Dialog', 'New script:')
+        if ok:
+            self.listScript.addItem(script)
+            self.tool.toolbox_data[category][script] = {"description": "",
+                                                        "version": "",
+                                                        "icon": "",
+                                                        "helpMessage": "",
+                                                        "helpPicture": "",
+                                                        "left_click_command": "",
+                                                        "middle_click_command": "",
+                                                        "right_click_command": "",
+                                                        "double_clickCommand": ""}
+
+    def printData(self):
+        left_script = self.leftScript.toPlainText()
+        middle_script = self.middleScript.toPlainText()
+        right_script = self.rightScript.toPlainText()
+
+        category = self.listCategory.currentItem().text()
+        script = self.listScript.currentItem().text()
+
+        self.tool.toolbox_data[category][script]['left_click_command'] = left_script
+        self.tool.toolbox_data[category][script]['middle_click_command'] = middle_script
+        self.tool.toolbox_data[category][script]['right_click_command'] = right_script
+
+        # pprint.pprint(self.tool.toolbox_data)
+
+        self.tool.saveFile()
 
 def launch():
     ''' Def to call to launch tool in maya '''

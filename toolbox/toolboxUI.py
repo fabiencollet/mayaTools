@@ -70,7 +70,7 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         self.setMinimumSize(150, 400)
         self.resize(150, 400)
 
-        self.tool = toolboxLib.ToolBoxLayout(os.sep.join([scriptDir, 'data', 'toolbox_fab.json']))
+        self.tool = toolboxLib.ToolBoxLayout(os.sep.join([scriptDir, 'data', 'toolbox_data.json']))
 
         self.createLayouts()
         self.createWidgets()
