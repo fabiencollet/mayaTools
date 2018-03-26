@@ -89,6 +89,16 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
     def createWidgets(self):
 
+        self.scrollArea = QtWidgets.QScrollArea()
+        self.buttonGrpWidget = QtWidgets.QWidget()
+
+        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setWidgetResizable(True)
+
+        self.buttonGrpWidget.setLayout(self.buttonLayout)
+        self.scrollArea.setWidget(self.buttonGrpWidget)
+
         self.main_widget = QtWidgets.QWidget()
 
         self.settingsBtn = QtWidgets.QPushButton()
@@ -125,7 +135,7 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
     def createHierarchy(self):
 
         self.mainLayout.addWidget(self.settingsBtn)
-        self.mainLayout.addLayout(self.buttonLayout)
+        self.mainLayout.addWidget(self.scrollArea)
 
         self.main_widget.setLayout(self.mainLayout)
         self.setCentralWidget(self.main_widget)
