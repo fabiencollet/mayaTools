@@ -12,3 +12,20 @@
 
 '''
 
+import maya.cmds as mc
+from random import randrange, random, choice
+
+def randomizeInt(min, max):
+
+    print randrange(min, max)
+
+    mc.undoInfo(openChunk=True)
+    mc.undoInfo(closeChunk=True)
+
+def randomizeFloat(min, max):
+
+    print random()
+
+def randomizeList(list):
+
+    print choice(list)
