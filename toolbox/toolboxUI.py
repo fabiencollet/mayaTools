@@ -12,8 +12,6 @@
 
 '''
 
-_version_ = '1.0.0'
-
 import maya.cmds as mc
 import toolboxManagerUI
 reload(toolboxManagerUI)
@@ -29,7 +27,9 @@ reload(customWidget)
 reload(toolboxLib)
 import os
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
-
+from maya import OpenMayaUI as OpenMayaUI
+from maya.OpenMayaUI import MQtUtil
+from maya.app.general.mayaMixin import MayaQDockWidget
 try:
     import pysideuic
     from shiboken import wrapInstance
@@ -39,10 +39,17 @@ except ImportError:
     from shiboken2 import wrapInstance
 
 
+# --------------------------------------------------------------------------------------------------
+# GLOBALS VARIABLES
+# --------------------------------------------------------------------------------------------------
+
+__version__ = '0.1.0'
+toolBoxWin = None
+
+# --------------------------------------------------------------------------------------------------
 def maya_main_window():
     main_window_ptr = omui.MQtUtil.mainWindow()
     return wrapInstance(long(main_window_ptr), QtWidgets.QWidget)
-
 
 # Style
 scriptDir = os.path.dirname(os.path.realpath(__file__))
@@ -52,7 +59,6 @@ with open(stylePath, 'r') as f:
     styleSheet = f.read()
     f.close()
 
-toolBoxWin = None
 
 
 class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
@@ -60,7 +66,7 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
     def __init__(self, parent):
         super(ToolboxUI, self).__init__(parent=parent)
 
-        self.title = ' - '.join(['Toolbox', _version_])
+        self.title = ' - '.join(['Toolbox', __version__])
         self.setObjectName('Toolbox')
 
         self.setWindowTitle(self.title)
@@ -147,17 +153,38 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
         self.toolboxManagerUI.show()
 
+    def dockCloseEventTriggered(self):
+        self.deleteInstances()
+
+    # Delete any instances of this class
+    def deleteInstances(self):
+        mayaMainWindowPtr = OpenMayaUI.MQtUtil.mainWindow()
+        mayaMainWindow = wrapInstance(long(mayaMainWindowPtr), QtWidgets.QMainWindow)
+        # Important that it's QMainWindow, and not QWidget/QDialog
+
+        # Go through main window's children to find any previous instances
+        for obj in mayaMainWindow.children():
+            if type(obj) == MayaQDockWidget:
+                # if obj.widget().__class__ == self.__class__:
+                # Alternatively we can check with this, but it will fail if we re-evaluate the class
+                print obj.widget().objectName()
+                if obj.widget().objectName() == self.objectName():  # Compare object names
+                    # If they share the same name then remove it
+                    print 'Deleting instance {0}'.format(obj)
+                    mayaMainWindow.removeDockWidget(obj)
+                    # This will remove from right-click menu,
+                    # but won't actually delete it! ( still under mainWindow.children() )
+                    # Delete it for good
+                    obj.setParent(None)
+                    obj.deleteLater()
+
 
 def launch():
     ''' Def to call to launch tool in maya '''
 
     global toolBoxWin
 
-    if toolBoxWin:
-        print toolBoxWin.objectName()
-
-        mc.deleteUI(toolBoxWin.objectName())
-
     mayaWin = maya_main_window()
     toolBoxWin = ToolboxUI(mayaWin)
+    toolBoxWin.deleteInstances()
     toolBoxWin.show(dockable=True, area='left')
