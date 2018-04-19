@@ -12,7 +12,6 @@
 
 '''
 
-import maya.cmds as mc
 import toolboxManagerUI
 reload(toolboxManagerUI)
 import maya.OpenMayaUI as omui
