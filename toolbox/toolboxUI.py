@@ -76,10 +76,11 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
         self.setMinimumSize(150, 400)
         self.resize(150, 400)
 
-        self.tool = toolboxLib.ToolBoxLayout(os.sep.join([scriptDir, 'data', 'toolbox_data.json']))
+        self.tool = {}
 
         self.createLayouts()
         self.createWidgets()
+        self.createButtons()
         self.createHierarchy()
         self.createConnections()
 
@@ -109,6 +110,19 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
         self.settingsBtn = QtWidgets.QPushButton()
         self.settingsBtn.setText('Settings')
+
+        self.refreshBtn = QtWidgets.QPushButton()
+        self.refreshBtn.setText('Refresh')
+
+    def deleteCurrentButtons(self):
+        for i in reversed(range(self.buttonLayout.count())):
+            self.buttonLayout.itemAt(i).widget().deleteLater()
+
+    def createButtons(self):
+
+        self.deleteCurrentButtons()
+
+        self.tool = toolboxLib.ToolBoxLayout(os.sep.join([scriptDir, 'data', 'toolbox_data.json']))
 
         for category in self.tool.getCategories():
 
@@ -141,6 +155,7 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
     def createHierarchy(self):
 
         self.mainLayout.addWidget(self.settingsBtn)
+        self.mainLayout.addWidget(self.refreshBtn)
         self.mainLayout.addWidget(self.scrollArea)
 
         self.main_widget.setLayout(self.mainLayout)
@@ -148,6 +163,7 @@ class ToolboxUI(MayaQWidgetDockableMixin, QtWidgets.QMainWindow):
 
     def createConnections(self):
         self.settingsBtn.clicked.connect(self.showToolboxManager)
+        self.refreshBtn.clicked.connect(self.createButtons)
 
     def showToolboxManager(self):
 
